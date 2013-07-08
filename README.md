@@ -1,4 +1,4 @@
-**WiringPi 2 for Python**
+**WiringCB for Python and c**
 
 WiringPi: An implementation of most of the Arduino Wiring
 	functions for the Raspberry Pi
@@ -14,7 +14,10 @@ You must have python-dev and python-setuptools installed
 If you manually rebuild the bindings with swig -python wiringpi.i
 
 **Get/setup repo:**
-git clone https://github.com/Gadgetoid/WiringPi2-Python.git
+git clone https://github.com/gootoomoon/WiringCB-python.git
+
+========= python start
+
 cd WiringPi2-Python
 
 **Build & install with:**
@@ -73,3 +76,15 @@ Hook a speaker up to your Pi and generate music with softTone. Also useful for g
 
 **Full details at:**
 http://www.wiringpi.com
+
+
+
+
+========= c start
+	cd WiringPi2-Python/WiringPi/
+	./build.sh
+	
+
+
+
+
