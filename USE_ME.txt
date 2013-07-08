@@ -1,0 +1,34 @@
+cubieboard  ubuntu/linaro 
+
+python:
+	git clone https://github.com/gootoomoon/WiringCB-python.git
+	cd WiringCB-python
+	
+	python setup.py install
+
+	when you see:
+		Processing dependencies for wiringpi2==1.0.10
+		Finished processing dependencies for wiringpi2==1.0.10	
+	it means install finished
+
+
+	you can test example /WiringPi2-Python/cb_test/py_test/ like this:
+
+		 python p_pwm_led.py
+
+
+c:
+	git clone https://github.com/gootoomoon/WiringCB-python.git
+	cd WiringPi2-Python/WiringPi/
+
+	./build.sh
+
+	when finished
+
+	you can test example WiringPi2-Python/cb_test/c_test/  like this 
+
+		gcc -o test  digital.c -lwiringPi -lpthread -lm
+		./test
+
+
+
