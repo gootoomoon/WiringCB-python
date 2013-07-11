@@ -1,4 +1,5 @@
 **WiringCB for Python and c**
+======================================
 
 WiringPi: An implementation of most of the Arduino Wiring
 	functions for the Raspberry Pi<br />
@@ -6,16 +7,19 @@ WiringPi2: WiringPi version 2 implements new functions for managing IO expanders
 WiringCB: Wiring like lib for cubieboard,change from  WiringPi2-Python<br/>
 
 **Testing:**
+-----------------------------
 
 Build with gcc version 4.6.3 (ubuntu/linaro 12.10)
 Built against Python 2.7.2, Python 3.2.3
 
 **Prerequisites:**
+-----------------------------
 
 You must have python-dev and python-setuptools installed <br/>
 If you manually rebuild the bindings with swig -python wiringpi.i
 
 **Get/setup repo:**
+-----------------------------
 
 git clone https://github.com/gootoomoon/WiringCB-python.git
 
@@ -23,12 +27,14 @@ Python Start
 ========================================
 
 **Build & install with:**
+-----------------------------
 
-cd WiringCB-python
-sudo python setup.py install   //python 2.7.x
-sudo python3 setup.py install  //python 3.2.x
+	cd WiringCB-python
+	sudo python setup.py install   //python 2.7.x
+	sudo python3 setup.py install  //python 3.2.x
 
 **Python Usage:**
+------------------------------
 
 	import wiringpi2
 	OUTPUT = 1
@@ -46,12 +52,14 @@ sudo python3 setup.py install  //python 3.2.x
 		wiringpi2.delay(1000)
 		
 **General IO:**
+-------------------------------
 
 	wiringpi2.pinMode(2,1)      # Set pin 2 to output
 	wiringpi2.digitalWrite(2,1) # Write 1 HIGH to pin 2
 	wiringpi2.digitalRead(50)    # Read pin 50(U15 pin 2)
 
 **Soft Tone**
+-------------------------------
 
 Hook a speaker up to your Pi and generate music with softTone. Also useful for generating frequencies for other uses such as modulating A/C.
 
@@ -59,16 +67,18 @@ Hook a speaker up to your Pi and generate music with softTone. Also useful for g
 	wiringpi2.softToneWrite(PIN,FREQUENCY)
 
 **Bit shifting:**
+------------------------------
 
 	wiringpi2.shiftOut(1,2,0,123) // Shift out 123 (b1110110, byte 0-255) to data pin 1, clock pin 2
 
 **Serial:**
+-----------------------------
 
 	serial = wiringpi2.serialOpen('/dev/ttyAMA0',9600) // Requires device/baud and returns an ID
 	wiringpi2.serialPuts(serial,"hello")
 	wiringpi2.serialClose(serial) // Pass in ID
 
-**Full details at:**
+##Full details at:<br />
 http://www.wiringpi.com
 
 
@@ -77,10 +87,35 @@ http://www.wiringpi.com
 C Start
 ==============================================
 
+**Build & install with:**
+-----------------------------
+
 	cd WiringPi2-Python/WiringPi/
 	./build.sh
 	
+**C Usage:**
+-----------------------------
+	#include <wiringPi.h>
+	
+	#define OUTPUT 	1
+	#define HIGH 	1
+	#define LOW	0
+	int pin = 1;
+	
+	
+	int main()
+	{
+		wiringPiSetupPhys();
+		pinMode(pin,OUTPUT);
+		for(;;){
+			digitalWrite(pin,HIGH);
+			delay(1000);
+			digitalWrite(pin,LOW);
+			delay(1000);
+		}
+	}
 
 
+gcc -o test test.c -lwiringPi -lpthread
 
 
