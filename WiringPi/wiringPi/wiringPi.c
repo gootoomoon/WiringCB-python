@@ -1390,21 +1390,22 @@ void sunxi_pullUpDnControl (int pin, int pud)
 	int sub = index >> 4;
 	int sub_index = index - 16*sub;
 	uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x1c + sub; // +0x10 -> pullUpDn reg
-//  	if (wiringPiDebug)
+  	if (wiringPiDebug)
 		printf("func:%s pin:%d,bank:%d index:%d sub:%d phyaddr:0x%x\n",__func__, pin,bank,index,sub,phyaddr);	
 	if(CB_PIN_MASK[bank][index] != -1){  //PI13~PI21 need check again
 		regval = readl(phyaddr);
-		printf("pullUpDn reg:0x%x\n", regval);
+  		if (wiringPiDebug)
+			printf("pullUpDn reg:0x%x, pud:0x%x sub_index:%d\n", regval, pud, sub_index);
 		regval &= ~(3 << (sub_index << 2));
 		regval |= (pud << (sub_index << 2));
-		printf("pullUpDn val ready to set:0x%x\n", regval);
+  		if (wiringPiDebug)
+			printf("pullUpDn val ready to set:0x%x\n", regval);
 
 		writel(regval, phyaddr);
 
 		regval = readl(phyaddr);
-		printf("pullUpDn reg after set:0x%x\n, addr:0x%x", regval, phyaddr);
   		if (wiringPiDebug)
-			printf("***** read reg val: 0x%x,bank:%d,index:%d,line:%d\n",regval,bank,index,__LINE__);
+			printf("pullUpDn reg after set:0x%x  addr:0x%x\n", regval, phyaddr);
 	} else {
 		printf("pin number error\n");
 	}	
