@@ -124,7 +124,8 @@
 //	The others are available for the other devices
 #ifdef CB_BOARD
 #define	PI_GPIO_MASK	(0xFFFFFFC0)
-#define	MAX_PIN_NUM		(0x120)  //287
+//#define	MAX_PIN_NUM		(0x120)  //287
+#define	MAX_PIN_NUM		(0x61)  //97
 #else
 #define	PI_GPIO_MASK	(0xFFFFFFC0)
 #define	MAX_PIN_NUM		(0x40)  //64
@@ -1379,6 +1380,36 @@ int sunxi_digitalRead(int pin)
 		printf("pin number error\n");
 	}	
 }
+
+
+void sunxi_pullUpDnControl (int pin, int pud)
+{
+	uint32_t regval = 0;
+	int bank = pin >> 5;
+	int index = pin - (bank << 5);
+	int sub = index >> 4;
+	int sub_index = index - 16*sub;
+	uint32_t phyaddr = SUNXI_GPIO_BASE + (bank * 36) + 0x1c + sub; // +0x10 -> pullUpDn reg
+//  	if (wiringPiDebug)
+		printf("func:%s pin:%d,bank:%d index:%d sub:%d phyaddr:0x%x\n",__func__, pin,bank,index,sub,phyaddr);	
+	if(CB_PIN_MASK[bank][index] != -1){  //PI13~PI21 need check again
+		regval = readl(phyaddr);
+		printf("pullUpDn reg:0x%x\n", regval);
+		regval &= ~(3 << (sub_index << 2));
+		regval |= (pud << (sub_index << 2));
+		printf("pullUpDn val ready to set:0x%x\n", regval);
+
+		writel(regval, phyaddr);
+
+		regval = readl(phyaddr);
+		printf("pullUpDn reg after set:0x%x\n, addr:0x%x", regval, phyaddr);
+  		if (wiringPiDebug)
+			printf("***** read reg val: 0x%x,bank:%d,index:%d,line:%d\n",regval,bank,index,__LINE__);
+	} else {
+		printf("pin number error\n");
+	}	
+	
+}
 /*
  *********************************************************************************
  * Core Functions
@@ -1519,7 +1550,22 @@ void pinMode (int pin, int mode)  //1111111
 
 void pullUpDnControl (int pin, int pud)
 {
-  struct wiringPiNodeStruct *node = wiringPiNodes ;
+  	struct wiringPiNodeStruct *node = wiringPiNodes ;
+#ifdef CB_BOARD
+	if (pin < MAX_PIN_NUM)		// On-Board Pin
+	{
+		if (wiringPiMode == WPI_MODE_PINS)
+			pin = physToGpio_CB [pin] ;
+		else if (wiringPiMode == WPI_MODE_PHYS)
+			pin = physToGpio_CB [pin] ;
+		else if (wiringPiMode != WPI_MODE_GPIO)
+			return ;
+
+		pud &= 3 ;
+
+		sunxi_pullUpDnControl(pin, pud);
+	}
+#else	
 
   if ((pin & PI_GPIO_MASK) == 0)		// On-Board Pin
   {
@@ -1538,6 +1584,7 @@ void pullUpDnControl (int pin, int pud)
     *(gpio + GPPUD)              = 0 ;			delayMicroseconds (5) ;
     *(gpio + gpioToPUDCLK [pin]) = 0 ;			delayMicroseconds (5) ;
   }
+#endif
   else
   {
     if ((node = wiringPiFindNode (pin)) != NULL)
@@ -2144,8 +2191,8 @@ int wiringPiSetup (void)
     printf ("wiringPi: wiringPiSetup called\n") ;
 
 #ifdef CB_BOARD   //this for cubieboard
-//    pinToGpio = pinToGpioR3;
-//   physToGpio = physToGpioR3;
+	 pinToGpio = physToGpio_CB ;
+	physToGpio = physToGpio_CB ;
 #else  
   boardRev = piBoardRev () ;
 
@@ -2212,9 +2259,11 @@ int wiringPiSetup (void)
 #endif
 
   initialiseEpoch () ;
-
-  wiringPiMode = WPI_MODE_PINS ;
-
+#ifdef CB_BOARD
+	wiringPiMode = WPI_MODE_PHYS ;
+#else
+  	wiringPiMode = WPI_MODE_PINS ;
+#endif
   return 0 ;
 }
 
@@ -2234,9 +2283,11 @@ int wiringPiSetupGpio (void)
 
   if (wiringPiDebug)
     printf ("wiringPi: wiringPiSetupGpio called\n") ;
-
-  wiringPiMode = WPI_MODE_GPIO ;
-
+#ifdef CB_BOARD
+	wiringPiMode = WPI_MODE_PHYS ;
+#else
+  	wiringPiMode = WPI_MODE_GPIO ;
+#endif
   return 0 ;
 }
 
@@ -2287,8 +2338,11 @@ int wiringPiSetupSys (void)
   if (wiringPiDebug)
     printf ("wiringPi: wiringPiSetupSys called\n") ;
 
-  //boardRev = piBoardRev () ;
-  boardRev = 1; //gootoomoon   xxxxxx todo
+#ifdef CB_BOARD
+	 pinToGpio = physToGpio_CB ;
+	physToGpio = physToGpio_CB ;
+#else
+  boardRev = piBoardRev () ;
 
   if (boardRev == 1)
   {
@@ -2300,7 +2354,7 @@ int wiringPiSetupSys (void)
      pinToGpio =  pinToGpioR2 ;
     physToGpio = physToGpioR2 ;
   }
-
+#endif
 // Open and scan the directory, looking for exported GPIOs, and pre-open
 //	the 'value' interface to speed things up for later
   
@@ -2312,8 +2366,10 @@ int wiringPiSetupSys (void)
   }
 
   initialiseEpoch () ;  //what is this?
-
-  wiringPiMode = WPI_MODE_GPIO_SYS ;
-
+#ifdef CB_BOARD
+	wiringPiMode = WPI_MODE_PHYS ;
+#else  
+ 	wiringPiMode = WPI_MODE_GPIO_SYS ;
+#endif
   return 0 ;
 }
