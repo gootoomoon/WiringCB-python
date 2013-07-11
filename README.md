@@ -30,8 +30,8 @@ Python Start
 -----------------------------
 
 	cd WiringCB-python
-	sudo python setup.py install   //python 2.7.x
-	sudo python3 setup.py install  //python 3.2.x
+	sudo python setup.py install   # python 2.7.x
+	sudo python3 setup.py install  # python 3.2.x
 
 **Python Usage:**
 ------------------------------
@@ -48,7 +48,7 @@ Python Start
 	while 1:
 		wiringpi2.digitalWrite(pin,HIGH) # Write HIGH to pin 2(U14 pin 2)
 		wiringpi2.delay(1000)
-		wiringpi2.digitalWrite(pin,LOW)
+		wiringpi2.digitalWrite(pin,LOW)  # Write LOW to pin
 		wiringpi2.delay(1000)
 		
 **General IO:**
@@ -69,14 +69,14 @@ Hook a speaker up to your Pi and generate music with softTone. Also useful for g
 **Bit shifting:**
 ------------------------------
 
-	wiringpi2.shiftOut(1,2,0,123) // Shift out 123 (b1110110, byte 0-255) to data pin 1, clock pin 2
+	wiringpi2.shiftOut(1,2,0,123) # Shift out 123 (b1110110, byte 0-255) to data pin 1, clock pin 2
 
 **Serial:**
 -----------------------------
 
-	serial = wiringpi2.serialOpen('/dev/ttyAMA0',9600) // Requires device/baud and returns an ID
+	serial = wiringpi2.serialOpen('/dev/ttyAMA0',9600) # Requires device/baud and returns an ID
 	wiringpi2.serialPuts(serial,"hello")
-	wiringpi2.serialClose(serial) // Pass in ID
+	wiringpi2.serialClose(serial) # Pass in ID
 
 ##Full details at:<br />
 http://www.wiringpi.com
@@ -100,22 +100,22 @@ C Start
 	#define OUTPUT 	1
 	#define HIGH 	1
 	#define LOW	0
-	int pin = 1;
 	
+	int pin = 1;
 	
 	int main()
 	{
-		wiringPiSetupPhys();
-		pinMode(pin,OUTPUT);
+		wiringPiSetupPhys();  //init wiringCB lib
+		pinMode(pin,OUTPUT);  //set pin to output mode
 		for(;;){
-			digitalWrite(pin,HIGH);
-			delay(1000);
-			digitalWrite(pin,LOW);
-			delay(1000);
+			digitalWrite(pin,HIGH); //Write HIGH(1) to pin 
+			delay(1000);		//delay for 1s
+			digitalWrite(pin,LOW);	//Write LOW(0) to pin
+			delay(1000);		//delay for 1s
 		}
 	}
 
 
-gcc -o test test.c -lwiringPi -lpthread
+compile code like this: gcc -o test test.c -lwiringPi -lpthread
 
 
