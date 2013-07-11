@@ -1,2 +1,0 @@
-_wiringpi2
-wiringpi2
