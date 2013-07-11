@@ -1,68 +1,55 @@
 **WiringCB for Python and c**
 
 WiringPi: An implementation of most of the Arduino Wiring
-	functions for the Raspberry Pi
-
-WiringPi2: WiringPi version 2 implements new functions for managing IO expanders.
-
-WiringCB: Wiring like lib for cubieboard,change from  WiringPi2-Python
+	functions for the Raspberry Pi<br />
+WiringPi2: WiringPi version 2 implements new functions for managing IO expanders.<br/>
+WiringCB: Wiring like lib for cubieboard,change from  WiringPi2-Python<br/>
 
 **Testing:**
-Build with gcc version 4.6.3 (Debian 4.6.3-14+rpi1)
+
+Build with gcc version 4.6.3 (ubuntu/linaro 12.10)
 Built against Python 2.7.2, Python 3.2.3
 
 **Prerequisites:**
-You must have python-dev and python-setuptools installed
+
+You must have python-dev and python-setuptools installed <br/>
 If you manually rebuild the bindings with swig -python wiringpi.i
 
 **Get/setup repo:**
+
 git clone https://github.com/gootoomoon/WiringCB-python.git
 
 Python Start
 ========================================
 
-cd WiringCB-python
-
 **Build & install with:**
-sudo python setup.py install
 
-Or Python 3
-sudo python3 setup.py install
+cd WiringCB-python
+sudo python setup.py install   //python 2.7.x
+sudo python3 setup.py install  //python 3.2.x
 
-** C start
-cd WiringCB-python/WiringCB/
-./build.sh
-
-**Class-based Usage:**
-Description incoming!
-
-**Usage:**
+**Python Usage:**
 
 	import wiringpi2
-	wiringpi2.wiringPiSetup // For sequential pin numbering, one of these MUST be called before using IO functions
-	OR
-	wiringpi2.wiringPiSetupSys // For /sys/class/gpio with GPIO pin numbering
-	OR
-	wiringpi2.wiringPiSetupGpio // For GPIO pin numbering
+	OUTPUT = 1
+	pin = 2
+	HIGH = 1 
+	LOW = 0	
+		
+	wiringpi2.wiringPiSetupPhys() # init pin to phy mode,U14(1~48) U15(49~96)
+	wiringpi2.pinMode(pin,OUTPUT) # set pin 2 to output mode
 
-Setting up IO expanders (This example was tested on a quick2wire board with one digital IO expansion board connected via I2C):
-
-	wiringpi2.mcp23017Setup(65,0x20)
-	wiringpi2.pinMode(65,1)
-	wiringpi2.digitalWrite(65,1)
-
+	while 1:
+		wiringpi2.digitalWrite(pin,HIGH) # Write HIGH to pin 2(U14 pin 2)
+		wiringpi2.delay(1000)
+		wiringpi2.digitalWrite(pin,LOW)
+		wiringpi2.delay(1000)
+		
 **General IO:**
 
-	wiringpi2.pinMode(1,1) // Set pin 1 to output
-	wiringpi2.digitalWrite(1,1) // Write 1 HIGH to pin 1
-	wiringpi2.digitalRead(1) // Read pin 1
-
-**Setting up a peripheral:**
-WiringPi2 supports expanding your range of available "pins" by setting up a port expander. The implementation details of
-your port expander will be handled transparently, and you can write to the additional pins ( starting from PIN_OFFSET >= 64 )
-as if they were normal pins on the Pi.
-
-	wiringpi2.mcp23017Setup(PIN_OFFSET,I2C_ADDR)
+	wiringpi2.pinMode(2,1)      # Set pin 2 to output
+	wiringpi2.digitalWrite(2,1) # Write 1 HIGH to pin 2
+	wiringpi2.digitalRead(50)    # Read pin 50(U15 pin 2)
 
 **Soft Tone**
 
