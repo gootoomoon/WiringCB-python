@@ -17,19 +17,24 @@ Prerequisites:
     If you manually rebuild the bindings with swig -python wiringpi.i
 
 Get/setup repo:
-    git clone https://github.com/Gadgetoid/WiringPi2-Python.git
-    cd WiringPi2-Python
+    git clone https://github.com/gootoomoon/WiringCB-python.git
+    cd WiringCB-Python
     
-Build & install with:
+Build & install python lib with:
     sudo python setup.py install
 
 Or Python 3
     sudo python3 setup.py install
 
+Build & install C lib with:
+    cd WiringCB-python/WiringPi/
+    chmod 777 build.sh
+    ./build.sh
+
 Class-based Usage:
     No classes have been created for this version yet.
 
-Usage:
+Python Usage:
     import wiringpi2
     wiringpi2.wiringPiSetup // For sequential pin numbering, one of these MUST be called before using IO functions
     OR
@@ -38,7 +43,7 @@ Usage:
     wiringpi2.wiringPiSetupGpio // For GPIO pin numbering
 
     Setting up IO expanders (This example was tested on a quick2wire board with one digital IO expansion board connected via I2C):
-    wiringpi2.mcp23017Setup(65,0x20)
+
     wiringpi2.pinMode(65,1)
     wiringpi2.digitalWrite(65,1)
 
@@ -51,7 +56,7 @@ Usage:
     wiringpi2.shiftOut(1,2,0,123) // Shift out 123 (b1110110, byte 0-255) to data pin 1, clock pin 2
 
     Serial:
-    serial = wiringpi2.serialOpen('/dev/ttyAMA0',9600) // Requires device/baud and returns an ID
+    serial = wiringpi2.serialOpen('/dev/ttyS0',115200) // Requires device/baud and returns an ID
     wiringpi2.serialPuts(serial,"hello")
     wiringpi2.serialClose(serial) // Pass in ID
 
