@@ -5,6 +5,8 @@ WiringPi: An implementation of most of the Arduino Wiring
 
 WiringPi2: WiringPi version 2 implements new functions for managing IO expanders.
 
+WiringCB: Wiring like lib for cubieboard,change from  WiringPi2-Python
+
 **Testing:**
 Build with gcc version 4.6.3 (Debian 4.6.3-14+rpi1)
 Built against Python 2.7.2, Python 3.2.3
@@ -16,15 +18,19 @@ If you manually rebuild the bindings with swig -python wiringpi.i
 **Get/setup repo:**
 git clone https://github.com/gootoomoon/WiringCB-python.git
 
-========= python start
+** python start
 
-cd WiringPi2-Python
+cd WiringCB-python
 
 **Build & install with:**
 sudo python setup.py install
 
 Or Python 3
 sudo python3 setup.py install
+
+** C start
+cd WiringCB-python/WiringCB/
+./build.sh
 
 **Class-based Usage:**
 Description incoming!
