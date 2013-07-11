@@ -18,7 +18,8 @@ If you manually rebuild the bindings with swig -python wiringpi.i
 **Get/setup repo:**
 git clone https://github.com/gootoomoon/WiringCB-python.git
 
-** python start
+Python Start
+========================================
 
 cd WiringCB-python
 
@@ -86,7 +87,9 @@ http://www.wiringpi.com
 
 
 
-========= c start
+C Start
+==============================================
+
 	cd WiringPi2-Python/WiringPi/
 	./build.sh
 	
