@@ -1343,7 +1343,7 @@ sunxi_digitalWrite(int pin, int value)
   		if (wiringPiDebug)
 			printf("befor write reg val: 0x%x,index:%d\n",regval,index);
 		if(0 == value){
-			regval &= (0 << index);
+			regval &= ~(1 << index);
 			writel(regval, phyaddr);
 			regval = readl(phyaddr);
   			if (wiringPiDebug)
