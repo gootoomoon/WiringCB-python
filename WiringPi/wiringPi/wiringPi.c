@@ -1396,8 +1396,8 @@ void sunxi_pullUpDnControl (int pin, int pud)
 		regval = readl(phyaddr);
   		if (wiringPiDebug)
 			printf("pullUpDn reg:0x%x, pud:0x%x sub_index:%d\n", regval, pud, sub_index);
-		regval &= ~(3 << (sub_index << 2));
-		regval |= (pud << (sub_index << 2));
+		regval &= ~(3 << (sub_index << 1));
+		regval |= (pud << (sub_index << 1));
   		if (wiringPiDebug)
 			printf("pullUpDn val ready to set:0x%x\n", regval);
 
