@@ -3417,6 +3417,7 @@ SWIGINTERN PyObject *_wrap_pinMode(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
   int ecode1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
+  int result;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -3431,8 +3432,8 @@ SWIGINTERN PyObject *_wrap_pinMode(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "pinMode" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
-  pinMode(arg1,arg2);
-  resultobj = SWIG_Py_Void();
+  result = (int)pinMode(arg1,arg2);
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;

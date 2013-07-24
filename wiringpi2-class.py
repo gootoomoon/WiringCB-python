@@ -55,7 +55,11 @@ class GPIO(object):
   INPUT = 0
   OUTPUT = 1
   PWM_OUTPUT = 2
-  GPIO_CLOCK = 3
+  PULLUP = 3
+  PULLDOWN = 4
+  PULLOFF = 5
+  CHECK = 6
+  GPIO_CLOCK = 8
 
   LOW = 0
   HIGH = 1

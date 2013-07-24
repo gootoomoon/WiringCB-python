@@ -35,10 +35,14 @@
 
 // Pin modes
 
-#define	INPUT			 0
-#define	OUTPUT			 1
-#define	PWM_OUTPUT		 2
-#define	GPIO_CLOCK		 3
+#define	INPUT			0
+#define	OUTPUT			1
+#define	PWM_OUTPUT		2
+#define	PULLUP		 	3
+#define	PULLDOWN		4
+#define	PULLOFF			5
+#define	CHECK		 	6
+#define	GPIO_CLOCK		7
 
 #define	LOW			 0
 #define	HIGH			 1
@@ -84,7 +88,7 @@ struct wiringPiNodeStruct
   unsigned int data2 ;	//  ditto
   unsigned int data3 ;	//  ditto
 
-  void   (*pinMode)         (struct wiringPiNodeStruct *node, int pin, int mode) ;
+  int   (*pinMode)         (struct wiringPiNodeStruct *node, int pin, int mode) ;
   void   (*pullUpDnControl) (struct wiringPiNodeStruct *node, int pin, int mode) ;
   int    (*digitalRead)     (struct wiringPiNodeStruct *node, int pin) ;
   void   (*digitalWrite)    (struct wiringPiNodeStruct *node, int pin, int value) ;
@@ -114,7 +118,7 @@ extern int  wiringPiSetupSys    (void) ;
 extern int  wiringPiSetupGpio   (void) ;
 extern int  wiringPiSetupPhys   (void) ;
 
-extern void pinMode             (int pin, int mode) ;
+extern int pinMode             (int pin, int mode) ;
 extern void pullUpDnControl     (int pin, int pud) ;
 extern int  digitalRead         (int pin) ;
 extern void digitalWrite        (int pin, int value) ;

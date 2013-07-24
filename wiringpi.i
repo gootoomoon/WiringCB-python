@@ -34,7 +34,7 @@ extern int  wiringPiSetupPhys   (void) ;
 
 extern int  piFaceSetup (int pinbase) ;
 
-extern void pinMode             (int pin, int mode) ;
+extern int pinMode             (int pin, int mode) ;
 extern void pullUpDnControl     (int pin, int pud) ;
 extern int  digitalRead         (int pin) ;
 extern void digitalWrite        (int pin, int value) ;

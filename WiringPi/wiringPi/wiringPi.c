@@ -45,6 +45,7 @@
 //		Added c++ support for the .h file
 //		Added a new function to allow for using my "pin" numbers, or native
 //			GPIO pin numbers.
+
 //		Removed my busy-loop delay and replaced it with a call to delayMicroseconds
 //
 //	02 May 2012:
@@ -70,7 +71,6 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 
-//#include "sunxi_cb_gpio.h"
 #include "wiringPi.h"
 
 #define CB_BOARD
@@ -253,6 +253,7 @@ static uint64_t epochMilli, epochMicro ;
 // Misc
 
 static int wiringPiMode = WPI_MODE_UNINITIALISED ;
+static int wiringPinMode = WPI_MODE_UNINITIALISED ;
 
 // Debugging & Return codes
 
@@ -275,6 +276,9 @@ void sunxi_pwm_set_mode(int mode);
 uint32_t sunxi_pwm_get_period(void);
 void sunxi_pwm_set_period(int period_cys);
 void sunxi_pwm_set_act(int act_cys);
+
+int wiringPiSetupPhys (void);
+void pullUpDnControl (int pin, int pud);
 // Doing it the Arduino way with lookup tables...
 //	Yes, it's probably more innefficient than all the bit-twidling, but it
 //	does tend to make it all a bit clearer. At least to me!
@@ -1424,17 +1428,18 @@ void sunxi_pullUpDnControl (int pin, int pud)
  *********************************************************************************
  */
 
-void pinMode (int pin, int mode)  //1111111
+//void pinMode (int pin, int mode)
+int pinMode (int pin, int mode)
 {
   int    fSel, shift, alt;
   struct wiringPiNodeStruct *node = wiringPiNodes ;
-
+	wiringPiSetupPhys();
   	if (wiringPiDebug)
   		printf ("%s,%d,pin:%d,mode:%d\n", __func__, __LINE__,pin,mode) ;
 
-  if ((pin < MAX_PIN_NUM))		// On-board pin  OR extral model pin
+  if ((pin < MAX_PIN_NUM))// On-board pin  OR extral model pin
   {
-	  /**/ if (wiringPiMode == WPI_MODE_PINS){
+	  if (wiringPiMode == WPI_MODE_PINS){
 #ifndef CB_BOARD
 		  pin = pinToGpio [pin] ;
 #endif
@@ -1464,12 +1469,9 @@ void pinMode (int pin, int mode)  //1111111
 	if (mode == INPUT){
 		/* set pin to INPUT mode */
 #ifdef CB_BOARD
-		/*
-		printf("********befor set input gpio:%d\n",*(gpio + fSel));
-		*(gpio + fSel + fCfg) = (*(gpio + fSel + fCfg) & ~(7 << shift)) ; // this test OK
-		printf("after set input gpio:%d\n",*(gpio + fSel + fCfg));
-		*/
 		sunxi_set_gpio_mode(pin,INPUT);
+		wiringPinMode = INPUT;
+		return 0;
 #else
 		*(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) ; // Sets bits to zero = input
 #endif
@@ -1477,16 +1479,10 @@ void pinMode (int pin, int mode)  //1111111
 	
 #ifdef CB_BOARD
 		/* set pin to OUTPUT mode */
-		/*
-		printf("........befor set output gpio:%d,vaddr:0x%x\n",*(gpio + fSel + fCfg), gpio + fSel + fCfg);
-		*(gpio + fSel + fCfg) = (*(gpio + fSel + fCfg) & ~(7 << shift)) | (1 << shift) ;
-		printf("after set input gpio:%d\n",*(gpio + fSel + fCfg));
-		*/
-	
+		
 		sunxi_set_gpio_mode(pin, OUTPUT); //gootoomoon_set_mode
-		//uint32_t val = readl(0x01c2086c);
-		//printf("reg val xxxxx 02:0x%x\n", val);
-
+		wiringPinMode = OUTPUT;
+		return 0;
 #else
 		*(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) | (1 << shift) ;
 	
@@ -1503,6 +1499,8 @@ void pinMode (int pin, int mode)  //1111111
 		}
 		printf("you choose the hardware PWM:%d\n", pin);
 		sunxi_set_gpio_mode(pin,PWM_OUTPUT);
+		wiringPinMode = PWM_OUTPUT;
+		return 0;
 #else
 		if ((alt = gpioToPwmALT [pin]) == 0)	// Not a PWM pin
 			return ;
@@ -1516,19 +1514,44 @@ void pinMode (int pin, int mode)  //1111111
 		pwmSetClock (32) ;			// 19.2 / 32 = 600KHz - Also starts the PWM
 #endif
 	}
-    else if (mode == GPIO_CLOCK)
-    {
-      if ((alt = gpioToGpClkALT0 [pin]) == 0)	// Not a GPIO_CLOCK pin
-	return ;
+    	else if (mode == PULLUP)
+    	{
+		pullUpDnControl (pin, 1);
+		wiringPinMode = PULLUP;
+		return 0;
+	}
+    	else if (mode == PULLDOWN)
+    	{
+		pullUpDnControl (pin, 2);
+		wiringPinMode = PULLDOWN;
+		return 0;
+	}
+    	else if (mode == PULLOFF)
+    	{
+		pullUpDnControl (pin, 0);
+		wiringPinMode = PULLOFF;
+		return 0;
+	}
+    	else if (mode == CHECK)
+    	{
+		return wiringPinMode;
+	}
+#if 0  // no need for cubieboard
+    	else if (mode == GPIO_CLOCK)
+    	{
+      		if ((alt = gpioToGpClkALT0 [pin]) == 0)	// Not a GPIO_CLOCK pin
+		return ;
 
-// Set pin to GPIO_CLOCK mode and set the clock frequency to 100KHz
+		// Set pin to GPIO_CLOCK mode and set the clock frequency to 100KHz
 
-      *(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) | (alt << shift) ;
-      delayMicroseconds (110) ;
-      gpioClockSet      (pin, 100000) ;
-    }
+      		*(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) | (alt << shift) ;
+      		delayMicroseconds (110) ;
+      		gpioClockSet      (pin, 100000) ;
+    	}
+
+#endif
   }
-  else
+  else //pin not on board
   {
   	if (wiringPiDebug)
     	printf ("start to find note %s,%d\n", __func__, __LINE__) ;
